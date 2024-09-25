@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:5.7
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: xinchao_database
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - mynetwork
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: xinchao-app:latest
+    container_name: server_container
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/xinchao_database?useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - /home/ubuntu/public/products:/app/public/products
+      - /home/ubuntu/public/identificationCard:/app/public/identificationCard
+    depends_on:
+      - database
+    networks:
+      - mynetwork
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  mynetwork:
