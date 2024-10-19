@@ -1,12 +1,15 @@
 package com.xinchao.services;
 
 import com.xinchao.dto.LoginDto;
+import com.xinchao.exception.InvalidPasswordException;
+import com.xinchao.exception.InvalidUsernameException;
 import com.xinchao.models.User;
 import com.xinchao.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,6 +19,8 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public AuthService(UserRepository userRepository, AuthenticationManager authenticationManager) {
@@ -23,36 +28,49 @@ public class AuthService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User authenticate(LoginDto input) {
-        User user = findUserByLoginDto(input)
-                .orElseThrow(() -> new AuthenticationException("User not found") {});
+    public User authenticate(String identifier, String password) {
+        Optional<User> userOpt = findUserByIdentifier(identifier);
 
-        String usernameForAuthentication = getUsernameForAuthentication(input, user);
-
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        usernameForAuthentication,
-                        input.getPassword()
-                )
-        );
-
-        return user;
-    }
-
-    private Optional<User> findUserByLoginDto(LoginDto input) {
-        if (input.getEmail() != null && !input.getEmail().isEmpty()) {
-            return userRepository.findByEmail(input.getEmail());
-        } else if (input.getVnId() != null && !input.getVnId().isEmpty()) {
-            return userRepository.findByVnId(input.getVnId());
-        } else if (input.getArc() != null && !input.getArc().isEmpty()) {
-            return userRepository.findByArc(input.getArc());
-        } else if (input.getPassport() != null && !input.getPassport().isEmpty()) {
-            return userRepository.findByPassportNumber(input.getPassport());
-        } else if (input.getPhone() != null && !input.getPhone().isEmpty()) {
-            return userRepository.findByPhoneNumber(input.getPhone());
+        if (userOpt.isEmpty()) {
+            throw new InvalidUsernameException("Tài khoản không hợp lệ");
         }
-        return Optional.empty();
+
+        User user = userOpt.get();
+
+        // Kiểm tra mật khẩu
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new InvalidPasswordException("Mật khẩu không chính xác");
+        }
+
+        return user; // Trả về đối tượng User nếu xác thực thành công
     }
+
+    private Optional<User> findUserByIdentifier(String identifier) {
+        // Kiểm tra các trường khác nhau dựa trên identifier
+        Optional<User> user = userRepository.findByEmail(identifier);
+        if (user.isPresent()) {
+            return user;
+        }
+
+        user = userRepository.findByVnId(identifier);
+        if (user.isPresent()) {
+            return user;
+        }
+
+        user = userRepository.findByArc(identifier);
+        if (user.isPresent()) {
+            return user;
+        }
+
+        user = userRepository.findByPassportNumber(identifier);
+        if (user.isPresent()) {
+            return user;
+        }
+
+        user = userRepository.findByPhoneNumber(identifier);
+        return user; // Trả về Optional.empty() nếu không tìm thấy
+    }
+
 
     private String getUsernameForAuthentication(LoginDto input, User user) {
         if (input.getEmail() != null && !input.getEmail().isEmpty()) {

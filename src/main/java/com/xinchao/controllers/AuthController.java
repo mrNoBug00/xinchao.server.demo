@@ -3,8 +3,11 @@ package com.xinchao.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xinchao.dto.LoginDto;
+import com.xinchao.exception.InvalidCredentialsException;
+import com.xinchao.exception.UserNotFoundException;
 import com.xinchao.models.Role;
 import com.xinchao.models.User;
+import com.xinchao.payload.request.LoginRequest;
 import com.xinchao.payload.request.ProductRequest;
 import com.xinchao.payload.request.UserRequest;
 import com.xinchao.payload.response.LoginResponse;
@@ -14,6 +17,7 @@ import com.xinchao.services.AuthService;
 import com.xinchao.services.JwtService;
 import com.xinchao.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,20 +52,39 @@ public class AuthController {
 
     //@CrossOrigin(origins = "https://xinchao-client-demo.vercel.app")
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginDto loginDto) {
-        User authenticatedUser = authService.authenticate(loginDto);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        String identifier = loginRequest.getIdentifier(); // Lấy identifier
+        String password = loginRequest.getPassword();
+
+        // Kiểm tra xem identifier là email, phone hay ID khác và xác thực
+        User authenticatedUser = authService.authenticate(identifier, password);
+
+        // Nếu người dùng không hợp lệ, trả về phản hồi không được phép
+        if (authenticatedUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        // Tạo JWT Token
         String jwtToken = jwtService.generateToken(authenticatedUser);
         String username = authenticatedUser.getUserName();
         String userId = authenticatedUser.getId();
         Role role = authenticatedUser.getRole();
+
+        // Tạo phản hồi chứa token và thông tin người dùng
         LoginResponse loginResponse = new LoginResponse()
                 .setToken(jwtToken)
                 .setExpiresIn(jwtService.getExpirationTime())
                 .setUserName(username)
                 .setRole(role)
                 .setUserId(userId);
+
+        // Trả về phản hồi với thông tin đã chuẩn bị
         return ResponseEntity.ok(loginResponse);
     }
+
+
+
+
     //@CrossOrigin(origins = "*")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(@RequestParam("user") String userJson,

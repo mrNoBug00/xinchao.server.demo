@@ -5,6 +5,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -54,5 +57,36 @@ public class GlobalExceptionHandler {
                 e.getLocalizedMessage()
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                "Dữ liệu không hợp lệ",
+                HttpStatus.BAD_REQUEST.value(),
+                e.getLocalizedMessage()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InvalidUsernameException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidUsernameException(InvalidUsernameException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                "Tài khoản không hợp lệ",
+                HttpStatus.BAD_REQUEST.value(),
+                e.getLocalizedMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidPasswordException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                "Mật khẩu không chính xác",
+                HttpStatus.UNAUTHORIZED.value(),
+                e.getLocalizedMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 }
