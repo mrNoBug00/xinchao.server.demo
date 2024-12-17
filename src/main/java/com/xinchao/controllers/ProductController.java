@@ -2,6 +2,7 @@ package com.xinchao.controllers;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.xinchao.dto.ProductDTO;
 import com.xinchao.models.Product;
 import com.xinchao.payload.request.ProductRequest;
 import com.xinchao.payload.response.ProductResponse;
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 @SuppressWarnings("checkstyle:Indentation")
+
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/products")
 //@Api(value = "Product Management System", tags = "Products")
@@ -36,30 +39,30 @@ public class ProductController {
     }
 
 
+    //@CrossOrigin(origins = "*")
     @GetMapping("/{id}")
     @AllRolePermission
-    public ResponseEntity<Product> getProductById(@PathVariable String id) {
-        Optional<Product> optionalProduct = productService.getProductById(id);
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable String id) {
+        Optional<ProductDTO> optionalProduct = productService.getProductById(id);
         return optionalProduct.map(product -> new ResponseEntity<>(product, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
 
-
-
-    @CrossOrigin(origins = "http://localhost:3000")
+    //@CrossOrigin(origins = "*")
     @PostMapping("/create")
     @AdminPermission
     public ResponseEntity<ProductResponse> createProduct(
             @RequestParam("product") String productJson,
             @RequestParam("images") MultipartFile[] images,
-            @RequestParam("userId") String userId) throws IOException {
+            @RequestParam("userId") String userId,
+            @RequestParam("companyInfoId") String companyInfoId) throws IOException {
 
         // Chuyển đổi chuỗi JSON thành đối tượng ProductRequest
         ObjectMapper objectMapper = new ObjectMapper();
         ProductRequest productRequest = objectMapper.readValue(productJson, ProductRequest.class);
 
-        ProductResponse createdProduct = productService.createProduct(productRequest, images, userId);
+        ProductResponse createdProduct = productService.createProduct(productRequest, images, userId, companyInfoId);
         return ResponseEntity.ok(createdProduct);
     }
 
@@ -87,10 +90,7 @@ public class ProductController {
     }
 
 
-
-
-
-
+    //@CrossOrigin(origins = "*")
     @DeleteMapping("/{id}")
     @AdminPermission
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {

@@ -34,6 +34,12 @@ public class ContractService {
     @Autowired
     private StatusRepository statusRepository;
 
+    @Autowired
+    private CompanyInfoRepository companyInfoRepository;
+
+    @Autowired
+    private RegulationsRepository regulationsRepository;
+
     public List<ContractResponse> getAllContracts() {
         List<Contract> contracts = contractRepository.findAll();
         return contracts.stream()
@@ -78,47 +84,86 @@ public class ContractService {
     }
 
     private void setContractFields(Contract contract, ContractRequest contractRequest) {
+
+        // user info
         contract.setUser(userRepository.findById(contractRequest.getUserId()).orElse(null));
-        List<Image> identificationCards = contractRequest.getIdentificationCardIds().stream()
+
+
+        List<Image> identificationCards = contractRequest.getCustomerIdentificationCardIds().stream()
                 .map(id -> imageRepository.findById(id).orElse(null))
                 .collect(Collectors.toList());
 
         Image signatureImage = imageRepository.findById(contractRequest.getSignatureId()).orElse(null);
+        contract.setSignatureId(signatureImage);
+
+        // customer identification
+        contract.setCustomerIdentificationCardIds(identificationCards);
+        contract.setIdentificationId(contractRequest.getCustomerIdentificationId());
 
 
-        contract.setIdentificationCard(identificationCards);
-        contract.setIdentificationId(contractRequest.getIdentificationId());
-        contract.setPhone(contractRequest.getPhone());
-        contract.setLessor(contractRequest.getLessor());
-        contract.setRenter(contractRequest.getRenter());
+
+        //company info
+        contract.setCompanyInfo(companyInfoRepository.findById(contractRequest.getCompanyId()).orElse(null));
+
+        //customer info
+        contract.setCustomerName(contract.getCustomerName());
+        contract.setPhone(contractRequest.getCustomerPhone());
+        contract.setCustomerLine(contractRequest.getCustomerLine());
+        contract.setCustomerZalo(contractRequest.getCustomerZalo());
+
+        //guarantor info
+        contract.setGuarantorName(contractRequest.getGuarantorName());
+        contract.setGuarantorPhone(contractRequest.getGuarantorPhone());
+        contract.setGuarantorLine(contractRequest.getGuarantorLine());
+        contract.setGuarantorZalo(contract.getGuarantorZalo());
+
+        //time of rent
         contract.setRentTimeFrom(contractRequest.getRentTimeFrom());
         contract.setRentTimeTo(contractRequest.getRentTimeTo());
+
+        //product info
         contract.setProduct(productRepository.findById(contractRequest.getProductId()).orElse(null));
         contract.setProductType(contractRequest.getProductType());
+
+        //Equipment Provided By The Lessor
         contract.setEquipmentProvidedByTheLessor(contractRequest.getEquipmentProvidedByTheLessor());
+
+        //contract info
         contract.setNumberOfRenter(contractRequest.getNumberOfRenter());
         contract.setRentFee(contractRequest.getRentFee());
         contract.setDayOfPayRentFee(contractRequest.getDayOfPayRentFee());
         contract.setElectricityFee(contractRequest.getElectricityFee());
         contract.setWaterFee(contractRequest.getWaterFee());
         contract.setTenancyDeposit(contractRequest.getTenancyDeposit());
-        contract.setRegulations(contractRequest.getRegulations());
+
+
+        List<String> regulationsIds = contractRequest.getRegulationsId();
+        List<Regulations> regulations = regulationsRepository.findAllByIdIn(regulationsIds);
+        contract.setRegulations(regulations);
+
+
         contract.setAgree(contractRequest.getAgree());
-        contract.setSignature(signatureImage);
         contract.setCreateAt(LocalDateTime.now());
     }
 
     private ContractResponse mapToContractResponse(Contract contract) {
         ContractResponse response = new ContractResponse();
+
         response.setId(contract.getId());
         response.setUser(mapToUserDTO(contract.getUser()));
-        response.setIdentificationCard(contract.getIdentificationCard().stream()
+        response.setCompanyInfo(contract.getCompanyInfo()); // Mapping for CompanyInfo
+        response.setIdentificationCard(contract.getCustomerIdentificationCardIds().stream()
                 .map(this::mapToImageDTO)
                 .collect(Collectors.toList()));
+        response.setCustomerName(contract.getCustomerName()); // Updated field mapping
         response.setIdentificationId(contract.getIdentificationId());
         response.setPhone(contract.getPhone());
-        response.setLessor(contract.getLessor());
-        response.setRenter(contract.getRenter());
+        response.setCustomerLine(contract.getCustomerLine());
+        response.setCustomerZalo(contract.getCustomerZalo());
+        response.setGuarantorName(contract.getGuarantorName());
+        response.setGuarantorPhone(contract.getGuarantorPhone());
+        response.setGuarantorLine(contract.getGuarantorLine());
+        response.setGuarantorZalo(contract.getGuarantorZalo());
         response.setRentTimeFrom(contract.getRentTimeFrom());
         response.setRentTimeTo(contract.getRentTimeTo());
         response.setProduct(mapToProductDTO(contract.getProduct()));
@@ -132,9 +177,10 @@ public class ContractService {
         response.setTenancyDeposit(contract.getTenancyDeposit());
         response.setRegulations(contract.getRegulations());
         response.setAgree(contract.getAgree());
-        response.setSignature(mapToImageDTO(contract.getSignature()));
+        response.setSignature(mapToImageDTO(contract.getSignatureId()));
         response.setStatus(contract.getStatus());
         response.setCreateTime(contract.getCreateAt());
+
         return response;
     }
 

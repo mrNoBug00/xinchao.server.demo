@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidUsernameException.class)
     public ResponseEntity<ErrorResponse> handleInvalidUsernameException(InvalidUsernameException e) {
         ErrorResponse errorResponse = new ErrorResponse(
-                "Tài khoản không hợp lệ",
+                "Invalid account",
                 HttpStatus.BAD_REQUEST.value(),
                 e.getLocalizedMessage()
         );
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidPasswordException e) {
         ErrorResponse errorResponse = new ErrorResponse(
-                "Mật khẩu không chính xác",
+                "Invalid password",
                 HttpStatus.UNAUTHORIZED.value(),
                 e.getLocalizedMessage()
         );

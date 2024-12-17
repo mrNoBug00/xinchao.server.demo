@@ -1,5 +1,7 @@
 package com.xinchao.payload.response;
 
+import com.xinchao.models.CompanyInfo;
+import com.xinchao.models.Regulations;
 import com.xinchao.models.Status;
 import com.xinchao.payload.response.ImageDTO;
 import com.xinchao.payload.response.ProductDTO;
@@ -14,11 +16,17 @@ import java.util.List;
 public class ContractResponse {
     private String id;
     private UserDTO user;
+    private CompanyInfo companyInfo; // Added this field
     private List<ImageDTO> identificationCard;
+    private String customerName; // Updated field name
     private String identificationId;
     private String phone;
-    private String lessor;
-    private String renter;
+    private String customerLine;
+    private String customerZalo;
+    private String guarantorName;
+    private String guarantorPhone;
+    private String guarantorLine;
+    private String guarantorZalo;
     private LocalDate rentTimeFrom;
     private LocalDate rentTimeTo;
     private ProductDTO product;
@@ -28,9 +36,9 @@ public class ContractResponse {
     private Integer rentFee;
     private Integer dayOfPayRentFee;
     private String electricityFee;
-    private String waterFee;
+    private Integer waterFee;
     private Integer tenancyDeposit;
-    private String regulations;
+    private List<Regulations> regulations;
     private Boolean agree;
     private ImageDTO signature;
     private Status status;

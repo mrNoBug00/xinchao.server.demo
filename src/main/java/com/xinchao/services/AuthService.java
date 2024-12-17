@@ -32,14 +32,14 @@ public class AuthService {
         Optional<User> userOpt = findUserByIdentifier(identifier);
 
         if (userOpt.isEmpty()) {
-            throw new InvalidUsernameException("Tài khoản không hợp lệ");
+            throw new InvalidUsernameException("Invalid account");
         }
 
         User user = userOpt.get();
 
         // Kiểm tra mật khẩu
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidPasswordException("Mật khẩu không chính xác");
+            throw new InvalidPasswordException("Invalid password");
         }
 
         return user; // Trả về đối tượng User nếu xác thực thành công

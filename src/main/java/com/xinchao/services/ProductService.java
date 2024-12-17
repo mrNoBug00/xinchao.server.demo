@@ -1,5 +1,6 @@
 package com.xinchao.services;
 
+import com.xinchao.dto.ProductDTO;
 import com.xinchao.exception.ImageSaveException;
 import com.xinchao.exception.UserNotFoundException;
 import com.xinchao.models.*;
@@ -8,6 +9,7 @@ import com.xinchao.payload.response.ProductResponse;
 import com.xinchao.payload.response.UserResponse;
 import com.xinchao.repository.ProductRepository;
 import com.xinchao.repository.StatusRepository;
+import com.xinchao.repository.CompanyInfoRepository;
 import com.xinchao.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +36,8 @@ public class ProductService {
     private UserRepository userRepository;
     @Autowired
     private StatusRepository statusRepository;
+    @Autowired
+    private CompanyInfoRepository companyInfoRepository;
 
     @Value("${product.upload.dir}")
     private String uploadDir;
@@ -48,11 +52,28 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<Product> getProductById(String id) {
-        return productRepository.findById(id);
+    public Optional<ProductDTO> getProductById(String id) {
+        Optional<Product> productOptional = productRepository.findById(id);
+
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            ProductDTO productDTO = new ProductDTO(
+                    product.getName(),
+                    product.getType(),
+                    product.getPrice(),
+                    product.getElectricityFee(),
+                    product.getWaterFee(),
+                    product.getGasFee(),
+                    product.getNumberOfTenantsByRoomRate(),
+                    product.getAddress()
+            );
+            return Optional.of(productDTO);
+        } else {
+            return Optional.empty();
+        }
     }
 
-    public ProductResponse createProduct(ProductRequest productRequest, MultipartFile[] imageUrl, String userId) throws IOException {
+    public ProductResponse createProduct(ProductRequest productRequest, MultipartFile[] imageUrl, String userId, String companyInfoId) throws IOException {
         Optional<Status> optionalStatus = statusRepository.findByName(StatusEnum.FOR_RENT);
         Product product = new Product();
         product.setName(productRequest.getName());
@@ -81,6 +102,10 @@ public class ProductService {
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
         product.setAuthor(user);
 
+        // Gán CompanyInfo
+        CompanyInfo companyInfo = companyInfoRepository.findById(companyInfoId)
+                .orElseThrow(() -> new RuntimeException("CompanyInfo with ID " + companyInfoId + " not found"));
+        product.setCompanyInfo(companyInfo);
         Product savedProduct = productRepository.save(product);
 
         return mapToProductResponse(savedProduct);
@@ -103,7 +128,8 @@ public class ProductService {
                 product.getNumberOfTenantsByRoomRate(),
                 product.getAddress(),
                 product.getImageUrl(),
-                authorResponse
+                authorResponse,
+                product.getCompanyInfo()
         );
     }
 

@@ -14,7 +14,7 @@ public class ProductRequest {
     private String description;
     private Integer price;
     private String electricityFee;
-    private String waterFee;
+    private Integer waterFee;
     private String gasFee;
     private String numberOfTenantsByRoomRate;
     private String address;
