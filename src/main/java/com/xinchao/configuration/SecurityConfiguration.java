@@ -44,7 +44,7 @@ public class SecurityConfiguration {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**", "/api/v1/images/**").permitAll() // Đảm bảo OPTIONS được cho phép
+                .requestMatchers("/api/**").permitAll() // Đảm bảo OPTIONS được cho phép
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
@@ -70,4 +70,20 @@ public class SecurityConfiguration {
 
         return source;
     }
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//
+//        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+//        configuration.setAllowCredentials(true); // Cho phép cookies và token
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//
+//        return source;
+//    }
+
+
 }
