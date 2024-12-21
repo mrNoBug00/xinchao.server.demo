@@ -1,8 +1,6 @@
 package com.xinchao.payload.response;
 
-import com.xinchao.models.CompanyInfo;
-import com.xinchao.models.Image;
-import com.xinchao.models.Status;
+import com.xinchao.models.*;
 import lombok.Data;
 
 import java.util.List;
@@ -11,7 +9,7 @@ import java.util.List;
 public class ProductResponse {
     private String id;
     private String name;
-    private String type;
+    private Category type;
     private String description;
     private Status status;
     private Integer price;
@@ -24,7 +22,7 @@ public class ProductResponse {
     private UserResponse  author;
     private CompanyInfo companyInfo;
 
-    public ProductResponse(String id, String name, String type, String description, Status status, Integer price, String electricityFee, Integer waterFee, String gasFee, String numberOfTenantsByRoomRate, String address, List<Image> image, UserResponse author, CompanyInfo companyInfo) {
+    public ProductResponse(String id, String name, Category type, String description, Status status, Integer price, String electricityFee, Integer waterFee, String gasFee, String numberOfTenantsByRoomRate, String address, List<Image> image, UserResponse author, CompanyInfo companyInfo) {
         this.id = id;
         this.name = name;
         this.type = type;

@@ -1,5 +1,6 @@
 package com.xinchao.controllers;
 
+import com.xinchao.endpoints.ContractApiEndpoints;
 import com.xinchao.payload.request.ContractRequest;
 import com.xinchao.payload.response.ContractResponse;
 import com.xinchao.services.ContractService;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/contracts")
+@RequestMapping(ContractApiEndpoints.BASE_URL_CONTRACT)
 public class ContractController {
 
     @Autowired
@@ -23,27 +24,27 @@ public class ContractController {
         return contractService.getAllContracts();
     }
     @CrossOrigin(origins = "*")
-    @GetMapping("/{id}")
+    @GetMapping(ContractApiEndpoints.GET_CONTRACT_BY_ID)
     public ResponseEntity<ContractResponse> getContractById(@PathVariable String id) {
         Optional<ContractResponse> contractResponse = contractService.getContractById(id);
         return contractResponse.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     @CrossOrigin(origins = "*")
-    @PostMapping("/create")
+    @PostMapping(ContractApiEndpoints.CREATE_CONTRACT)
     public ResponseEntity<ContractResponse> createContract(@RequestBody ContractRequest contractRequest) {
         ContractResponse contractResponse = contractService.createContract(contractRequest);
         return new ResponseEntity<>(contractResponse, HttpStatus.CREATED);
     }
     @CrossOrigin(origins = "*")
-    @PutMapping("/{id}")
+    @PutMapping(ContractApiEndpoints.UPDATE_CONTRACT)
     public ResponseEntity<ContractResponse> updateContract(@PathVariable String id, @RequestBody ContractRequest contractRequest) {
         Optional<ContractResponse> contractResponse = contractService.updateContract(id, contractRequest);
         return contractResponse.map(response -> new ResponseEntity<>(response, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     @CrossOrigin(origins = "*")
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ContractApiEndpoints.DELETE_CONTRACT)
     public ResponseEntity<Void> deleteContract(@PathVariable String id) {
         boolean deleted = contractService.deleteContract(id);
         if (deleted) {
@@ -54,7 +55,7 @@ public class ContractController {
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/{id}/signConfirm")
+    @PostMapping(ContractApiEndpoints.SIGN_CONTRACT_CONFIRM)
     public ResponseEntity<ContractResponse> signContractConfirm(@PathVariable String id) {
         ContractResponse confirmedContract = contractService.signContractConfirm(id);
         return confirmedContract != null ? ResponseEntity.ok(confirmedContract) : ResponseEntity.notFound().build();

@@ -2,6 +2,7 @@ package com.xinchao.payload.response;
 
 import com.xinchao.models.Image;
 import com.xinchao.models.Status;
+import com.xinchao.models.StatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 

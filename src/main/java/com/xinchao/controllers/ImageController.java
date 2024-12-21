@@ -1,6 +1,8 @@
 package com.xinchao.controllers;
 
+import com.xinchao.endpoints.ImageApiEndpoints;
 import com.xinchao.models.Image;
+import com.xinchao.security.AllRolePermission;
 import com.xinchao.services.ImageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -17,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/images")
+@AllRolePermission
+@RequestMapping(ImageApiEndpoints.BASE_URL_Image)
 public class ImageController {
 
     private final ImageService imageService;
@@ -30,7 +33,7 @@ public class ImageController {
     @Value("${identificationCard.upload.dir}")
     private String identificationCard;
     @CrossOrigin(origins = "*")
-    @GetMapping("/{imageUrl}")
+    @GetMapping(ImageApiEndpoints.GET_IMAGE_BY_URL)
     public ResponseEntity<byte[]> getImageByName(@PathVariable String imageUrl) {
         Image image = imageService.getImageByUrl(imageUrl);
         if (image != null) {

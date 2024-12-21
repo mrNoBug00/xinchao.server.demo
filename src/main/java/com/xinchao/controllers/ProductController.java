@@ -3,7 +3,9 @@ package com.xinchao.controllers;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xinchao.dto.ProductDTO;
+import com.xinchao.endpoints.ProductApiEndpoints;
 import com.xinchao.models.Product;
+import com.xinchao.models.StatusEnum;
 import com.xinchao.payload.request.ProductRequest;
 import com.xinchao.payload.response.ProductResponse;
 import com.xinchao.security.AdminPermission;
@@ -25,7 +27,7 @@ import java.util.Optional;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping(ProductApiEndpoints.BASE_URL_PRODUCT)
 //@Api(value = "Product Management System", tags = "Products")
 public class ProductController {
 
@@ -40,17 +42,21 @@ public class ProductController {
 
 
     //@CrossOrigin(origins = "*")
-    @GetMapping("/{id}")
     @AllRolePermission
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable String id) {
-        Optional<ProductDTO> optionalProduct = productService.getProductById(id);
-        return optionalProduct.map(product -> new ResponseEntity<>(product, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping(ProductApiEndpoints.GET_PRODUCT_BY_ID)
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable String id) {
+        Optional<ProductResponse> productResponseOptional = productService.getProductById(id);
+
+        if (productResponseOptional.isPresent()) {
+            return ResponseEntity.ok(productResponseOptional.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
     //@CrossOrigin(origins = "*")
-    @PostMapping("/create")
+    @PostMapping(ProductApiEndpoints.CREATE_PRODUCT)
     @AdminPermission
     public ResponseEntity<ProductResponse> createProduct(
             @RequestParam("product") String productJson,
@@ -68,7 +74,7 @@ public class ProductController {
 
 
     //@CrossOrigin(origins = "*")
-    @PutMapping("/{id}")
+    @PutMapping(ProductApiEndpoints.UPDATE_PRODUCT)
     @AdminPermission
     public ResponseEntity<?> updateProduct(
             @PathVariable String id,
@@ -91,7 +97,7 @@ public class ProductController {
 
 
     //@CrossOrigin(origins = "*")
-    @DeleteMapping("/{id}")
+    @DeleteMapping(ProductApiEndpoints.DELETE_PRODUCT)
     @AdminPermission
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         boolean deleted = productService.deleteProduct(id);
@@ -101,4 +107,34 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @GetMapping(ProductApiEndpoints.GET_PRODUCTS_BY_CATEGORY)
+    public ResponseEntity<List<ProductResponse>> getProductsByCategory(@PathVariable String categoryName) {
+        try {
+            List<ProductResponse> products = productService.getProductsByCategory(categoryName);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping(ProductApiEndpoints.GET_PRODUCTS_BY_STATUS)
+    public ResponseEntity<List<ProductResponse>> getProductsByStatus(@PathVariable String statusName) {
+        try {
+            // Chuyển đổi statusName thành StatusEnum
+            StatusEnum statusEnum = StatusEnum.valueOf(statusName.toUpperCase());
+
+            // Gọi service để lấy sản phẩm theo trạng thái
+            List<ProductResponse> products = productService.getProductsByStatus(statusEnum);
+            return ResponseEntity.ok(products);
+        } catch (IllegalArgumentException e) {
+            // Trả về lỗi nếu giá trị không hợp lệ
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+
+
+
+
 }

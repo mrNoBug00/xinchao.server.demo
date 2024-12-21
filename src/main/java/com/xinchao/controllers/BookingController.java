@@ -1,6 +1,7 @@
 package com.xinchao.controllers;
 
 import com.xinchao.dto.AdminActionBookingDto;
+import com.xinchao.endpoints.BookingApiEndpoints;
 import com.xinchao.payload.request.BookingRequest;
 import com.xinchao.payload.response.BookingResponse;
 import com.xinchao.security.AdminPermission;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
-@RequestMapping("/api/v1/bookings")
+@RequestMapping(BookingApiEndpoints.BASE_URL_BOOKING)
 public class BookingController {
 
     @Autowired
@@ -23,21 +24,21 @@ public class BookingController {
         BookingResponse bookingResponse = bookingService.createBooking(bookingRequest);
         return ResponseEntity.ok(bookingResponse);
     }
-    @PutMapping("/confirm")
+    @PutMapping(BookingApiEndpoints.CONFIRM_BOOKING)
     @AdminPermission
     public ResponseEntity<BookingResponse> confirmBooking(@RequestBody AdminActionBookingDto adminActionBookingDto) {
         BookingResponse bookingResponse = bookingService.confirmBooking(adminActionBookingDto);
         return ResponseEntity.ok(bookingResponse);
     }
 
-    @PutMapping("/refuse")
+    @PutMapping(BookingApiEndpoints.REFUSE_BOOKING)
     @AdminPermission
     public ResponseEntity<BookingResponse> refuseBooking(@RequestBody AdminActionBookingDto adminActionBookingDto) {
         BookingResponse bookingResponse = bookingService.refuseBooking(adminActionBookingDto);
         return ResponseEntity.ok(bookingResponse);
     }
 
-    @PutMapping("/cancel")
+    @PutMapping(BookingApiEndpoints.CANCEL_BOOKING)
     @AdminPermission
     public ResponseEntity<BookingResponse> cancelBooking(@RequestBody AdminActionBookingDto adminActionBookingDto) {
         BookingResponse bookingResponse = bookingService.cancelBooking(adminActionBookingDto);

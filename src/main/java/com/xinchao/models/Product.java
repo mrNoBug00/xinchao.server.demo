@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,11 @@ public class Product {
     private String id;
 
     private String name;
-    private String type;
+
+    @OneToOne
+    @JoinColumn(name = "category_id")
+    private Category type;
+
     private Integer price;
     private String electricityFee;
     private Integer waterFee;
@@ -36,9 +41,11 @@ public class Product {
     private List<Image> imageUrl;
 
 
+
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "status_id", referencedColumnName = "id", nullable = false)
     private Status status;
+
 
 
 

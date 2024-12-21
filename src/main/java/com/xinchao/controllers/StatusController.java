@@ -1,5 +1,6 @@
 package com.xinchao.controllers;
 
+import com.xinchao.endpoints.StatusApiEndpoints;
 import com.xinchao.models.Status;
 import com.xinchao.models.StatusEnum;
 import com.xinchao.security.AdminPermission;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 @RestController
-@RequestMapping("/api/v1/statuses")
+@RequestMapping(StatusApiEndpoints.BASE_URL_STATUS)
 public class StatusController {
 
     @Autowired
@@ -31,7 +32,7 @@ public class StatusController {
         return ResponseEntity.ok(newStatus);
     }
     @CrossOrigin(origins = "*")
-    @DeleteMapping("/{id}")
+    @DeleteMapping(StatusApiEndpoints.DELETE_STATUS)
     @AdminPermission
     public ResponseEntity<String> deleteStatus(@PathVariable Integer id) {
         boolean isDeleted = statusService.deleteStatus(id);
@@ -42,7 +43,7 @@ public class StatusController {
         }
     }
     @CrossOrigin(origins = "*")
-    @GetMapping("/name/{name}")
+    @GetMapping(StatusApiEndpoints.GET_STATUS_BY_NAME)
     @AdminPermission
     public ResponseEntity<Status> getStatusByName(@PathVariable StatusEnum name) {
         Optional<Status> status = statusService.getStatusByName(name);

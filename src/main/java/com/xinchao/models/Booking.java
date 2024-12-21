@@ -3,12 +3,16 @@ package com.xinchao.models;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "bookings")
+@Getter
+@Setter
 public class Booking {
 
     @Id
@@ -44,85 +48,5 @@ public class Booking {
 
     private String refuseOrCancelMessage;
 
-    public void setId(String id) {
-        this.id = id;
-    }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Product getRoom() {
-        return room;
-    }
-
-    public void setRoom(Product room) {
-        this.room = room;
-    }
-
-    public String getBookerName() {
-        return bookerName;
-    }
-
-    public void setBookerName(String bookerName) {
-        this.bookerName = bookerName;
-    }
-
-    public String getBookerPhone() {
-        return bookerPhone;
-    }
-
-    public void setBookerPhone(String bookerPhone) {
-        this.bookerPhone = bookerPhone;
-    }
-
-    public LocalDateTime getBookingTime() {
-        return bookingTime;
-    }
-
-    public void setBookingTime(LocalDateTime bookingTime) {
-        this.bookingTime = bookingTime;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public User getAdminId() {
-        return adminId;
-    }
-
-    public void setAdminId(User adminId) {
-        this.adminId = adminId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-
-
-    public String getRefuseOrCancelMessage() {
-        return refuseOrCancelMessage;
-    }
-
-    public void setRefuseOrCancelMessage(String refuseOrCancelMessage) {
-        this.refuseOrCancelMessage = refuseOrCancelMessage;
-    }
-
-    public List<Image> getContactQrCode() {
-        return contactQrCode;
-    }
-
-    public void setContactQrCode(List<Image> contactQrCode) {
-        this.contactQrCode = contactQrCode;
-    }
 }

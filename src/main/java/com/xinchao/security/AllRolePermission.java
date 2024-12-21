@@ -7,7 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@PreAuthorize("hasRole('ADMIN') OR hasRole('SUPER_ADMIN') OR hasRole('USER')")
+@PreAuthorize("hasRole('ADMIN') OR hasRole('SUPER_ADMIN') OR hasRole('USER') OR permitAll()")
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.TYPE })
 public @interface AllRolePermission {
