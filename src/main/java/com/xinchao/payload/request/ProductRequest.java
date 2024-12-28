@@ -1,6 +1,8 @@
 package com.xinchao.payload.request;
 
+import com.xinchao.models.Category;
 import com.xinchao.models.Status;
+import com.xinchao.models.StatusEnum;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +12,7 @@ import lombok.Setter;
 @Data
 public class ProductRequest {
     private String name;
-    private String type;
+    private Integer category;
     private String description;
     private Integer price;
     private String electricityFee;

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -19,7 +20,12 @@ public class Product {
     private String id;
 
     private String name;
-    private String type;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     private Integer price;
     private String electricityFee;
     private Integer waterFee;
@@ -30,10 +36,11 @@ public class Product {
     @Column(length = 1000)
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     @JsonManagedReference
     private List<Image> imageUrl;
+
 
 
     @OneToOne(fetch = FetchType.EAGER)
@@ -42,7 +49,8 @@ public class Product {
 
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User author;
 

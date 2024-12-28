@@ -3,6 +3,7 @@ package com.xinchao.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xinchao.dto.LoginDto;
+import com.xinchao.endpoints.AuthApiEndpoints;
 import com.xinchao.exception.InvalidCredentialsException;
 import com.xinchao.exception.UserNotFoundException;
 import com.xinchao.models.Role;
@@ -13,6 +14,7 @@ import com.xinchao.payload.request.UserRequest;
 import com.xinchao.payload.response.LoginResponse;
 import com.xinchao.payload.response.ProductResponse;
 import com.xinchao.payload.response.UserResponse;
+import com.xinchao.security.AllRolePermission;
 import com.xinchao.services.AuthService;
 import com.xinchao.services.JwtService;
 import com.xinchao.services.UserService;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("api/v1/auth")
+@RequestMapping(AuthApiEndpoints.BASE_URL_AUTH)
 public class AuthController {
 
     private final JwtService jwtService;
@@ -41,7 +43,8 @@ public class AuthController {
     }
 
     @CrossOrigin(origins = "*")
-    @PostMapping("/register")
+    @AllRolePermission
+    @PostMapping(AuthApiEndpoints.AUTH_REGISTER)
     public ResponseEntity<?> register(@RequestBody UserRequest userRequest) throws IOException {
         UserResponse registerUser = userService.createUser(userRequest);
         if (registerUser == null) {
@@ -51,7 +54,8 @@ public class AuthController {
     }
 
     //@CrossOrigin(origins = "https://xinchao-client-demo.vercel.app")
-    @PostMapping("/login")
+    @PostMapping(AuthApiEndpoints.AUTH_LOGIN)
+    @AllRolePermission
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         String identifier = loginRequest.getIdentifier(); // Lấy identifier
         String password = loginRequest.getPassword();
@@ -86,7 +90,7 @@ public class AuthController {
 
 
     //@CrossOrigin(origins = "*")
-    @PutMapping("/{id}")
+    @PutMapping(AuthApiEndpoints.AUTH_UPDATE_USER)
     public ResponseEntity<UserResponse> updateUser(@RequestParam("user") String userJson,
                                            @PathVariable String id) throws IOException {
 
@@ -98,7 +102,7 @@ public class AuthController {
 
     }
     //@CrossOrigin(origins = "*")
-    @DeleteMapping("/{userId}")
+    @DeleteMapping(AuthApiEndpoints.AUTH_DELETE_USER)
     public ResponseEntity<String> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok("User deleted successfully");

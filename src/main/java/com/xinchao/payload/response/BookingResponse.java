@@ -2,6 +2,7 @@ package com.xinchao.payload.response;
 
 import com.xinchao.models.Image;
 import com.xinchao.models.Status;
+import com.xinchao.models.StatusEnum;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Getter
 public class BookingResponse {
     private String id;
-    private String userId;
+//    private String userId;
     private String roomId;
     private String roomName;
     private String roomAddress;
@@ -26,12 +27,12 @@ public class BookingResponse {
     private String refuseOrCancelMessage;
     private List<Image> contactQrCode;
 
-    public BookingResponse(String id, String userId, String roomId, String roomName, String roomAddress,
+    public BookingResponse(String id, String roomId, String roomName, String roomAddress,
                            String bookerName, String bookerPhone, LocalDateTime bookingTime,
                            Status status, String confirmedBy, String refuseBy,
                            String cancelBy, String refuseOrCancelMessage, List<Image> contactQrCode) {
         this.id = id;
-        this.userId = userId;
+//        this.userId = userId;
         this.roomId = roomId;
         this.roomName = roomName;
         this.roomAddress = roomAddress;

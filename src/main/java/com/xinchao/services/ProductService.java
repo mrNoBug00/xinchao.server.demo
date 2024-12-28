@@ -7,13 +7,14 @@ import com.xinchao.models.*;
 import com.xinchao.payload.request.ProductRequest;
 import com.xinchao.payload.response.ProductResponse;
 import com.xinchao.payload.response.UserResponse;
-import com.xinchao.repository.ProductRepository;
-import com.xinchao.repository.StatusRepository;
-import com.xinchao.repository.CompanyInfoRepository;
-import com.xinchao.repository.UserRepository;
+import com.xinchao.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -37,7 +38,11 @@ public class ProductService {
     @Autowired
     private StatusRepository statusRepository;
     @Autowired
+    private CategoryRepository categoryRepository;
+    @Autowired
     private CompanyInfoRepository companyInfoRepository;
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Value("${product.upload.dir}")
     private String uploadDir;
@@ -52,32 +57,25 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public Optional<ProductDTO> getProductById(String id) {
+    public Optional<ProductResponse> getProductById(String id) {
         Optional<Product> productOptional = productRepository.findById(id);
 
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            ProductDTO productDTO = new ProductDTO(
-                    product.getName(),
-                    product.getType(),
-                    product.getPrice(),
-                    product.getElectricityFee(),
-                    product.getWaterFee(),
-                    product.getGasFee(),
-                    product.getNumberOfTenantsByRoomRate(),
-                    product.getAddress()
-            );
-            return Optional.of(productDTO);
+            return Optional.of(mapToProductResponse(product));  // Sử dụng mapToProductResponse thay vì ProductDTO
         } else {
             return Optional.empty();
         }
     }
 
+
     public ProductResponse createProduct(ProductRequest productRequest, MultipartFile[] imageUrl, String userId, String companyInfoId) throws IOException {
         Optional<Status> optionalStatus = statusRepository.findByName(StatusEnum.FOR_RENT);
+        Optional<Category> optionalCategory = categoryRepository.findById(productRequest.getCategory());
+
         Product product = new Product();
         product.setName(productRequest.getName());
-        product.setType(productRequest.getType());
+        product.setCategory(optionalCategory.orElseThrow(() -> new RuntimeException("Category not found")));
         product.setPrice(productRequest.getPrice());
         product.setElectricityFee(productRequest.getElectricityFee());
         product.setWaterFee(productRequest.getWaterFee());
@@ -118,7 +116,7 @@ public class ProductService {
         return new ProductResponse(
                 product.getId(),
                 product.getName(),
-                product.getType(),
+                product.getCategory(),
                 product.getDescription(),
                 product.getStatus(),
                 product.getPrice(),
@@ -152,18 +150,20 @@ public class ProductService {
         );
     }
 
-    public ProductResponse updateProduct(String id, ProductRequest productRequest, MultipartFile[] imageUrl) throws IOException {
+    public ProductResponse updateProduct(String id, ProductRequest productRequest, MultipartFile[] imageUrl, String userId, String companyInfoId) throws IOException {
 
         Product product = productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         Optional<Status> optionalStatus = statusRepository.findById(productRequest.getStatusId());
+        Optional<Category> optionalCategory = categoryRepository.findById(productRequest.getCategory());
+
         if (!optionalStatus.isPresent()) {
             throw new IllegalArgumentException("Status not found");
         }
 
         // Cập nhật thông tin sản phẩm từ ProductRequest
         product.setName(productRequest.getName());
-        product.setType(productRequest.getType());
+        product.setCategory(optionalCategory.orElseThrow(() -> new RuntimeException("Category not found")));
         product.setPrice(productRequest.getPrice());
         product.setElectricityFee(productRequest.getElectricityFee());
         product.setWaterFee(productRequest.getWaterFee());
@@ -172,6 +172,14 @@ public class ProductService {
         product.setDescription(productRequest.getDescription());
         product.setAddress(productRequest.getAddress());
         product.setStatus(optionalStatus.get());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+        product.setAuthor(user);
+
+        // Gán CompanyInfo
+        CompanyInfo companyInfo = companyInfoRepository.findById(companyInfoId)
+                .orElseThrow(() -> new RuntimeException("CompanyInfo with ID " + companyInfoId + " not found"));
+        product.setCompanyInfo(companyInfo);
 
         List<Image> newImagesList = new ArrayList<>();
         for (MultipartFile image : imageUrl) {
@@ -194,15 +202,36 @@ public class ProductService {
     }
 
 
+    @Transactional
     public boolean deleteProduct(String id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
         if (optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+
+            // Xóa các hình ảnh liên quan trước khi xóa sản phẩm
+            imageRepository.deleteByProductId(id);
+
+            // Xóa sản phẩm
             productRepository.deleteById(id);
             return true;
         } else {
             return false; // Product not found
         }
     }
+
+
+
+    public List<ProductResponse> getProductsByCategory(String categoryName) {
+        Category category = categoryRepository.findByName(categoryName)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        List<Product> products = productRepository.findByCategory(category);
+
+        return products.stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
 
     public class ImageInfo {
         private String uniqueFileName;
@@ -232,5 +261,23 @@ public class ProductService {
             throw new ImageSaveException("Failed to save image: " + file.getOriginalFilename(), e);
         }
     }
+
+    public List<ProductResponse> getProductsByStatus(StatusEnum statusEnum) {
+        List<Product> products = productRepository.findByStatus_Name(statusEnum); // Tìm sản phẩm theo tên trạng thái
+        return products.stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    public Page<ProductResponse> getPaginatedProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Sử dụng Deferred Joins qua @EntityGraph hoặc JOIN FETCH
+        Page<Product> productPage = productRepository.findAllWithCategory(pageable);
+
+        // Chuyển đổi sang ProductResponse
+        return productPage.map(this::mapToProductResponse);
+    }
+
 
 }

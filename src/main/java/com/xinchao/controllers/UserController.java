@@ -1,6 +1,7 @@
 package com.xinchao.controllers;
 
 
+import com.xinchao.endpoints.UserApiEndpoints;
 import com.xinchao.models.User;
 import com.xinchao.payload.response.UserResponse;
 import com.xinchao.security.AdminPermission;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping(UserApiEndpoints.BASE_URL_USERS)
 public class UserController {
 
     private final UserService userService;
@@ -30,8 +31,7 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
     @CrossOrigin(origins = "*")
-    @GetMapping("/users")
-    //@PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @GetMapping()
     @AdminPermission
     public ResponseEntity<List<UserResponse>> allUsers() {
 

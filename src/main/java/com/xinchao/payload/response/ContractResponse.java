@@ -3,6 +3,7 @@ package com.xinchao.payload.response;
 import com.xinchao.models.CompanyInfo;
 import com.xinchao.models.Regulations;
 import com.xinchao.models.Status;
+import com.xinchao.models.StatusEnum;
 import com.xinchao.payload.response.ImageDTO;
 import com.xinchao.payload.response.ProductDTO;
 import com.xinchao.payload.response.UserDTO;
