@@ -9,7 +9,7 @@ import java.util.List;
 public class ProductResponse {
     private String id;
     private String name;
-    private Category type;
+    private Category category;
     private String description;
     private Status status;
     private Integer price;
@@ -22,10 +22,10 @@ public class ProductResponse {
     private UserResponse  author;
     private CompanyInfo companyInfo;
 
-    public ProductResponse(String id, String name, Category type, String description, Status status, Integer price, String electricityFee, Integer waterFee, String gasFee, String numberOfTenantsByRoomRate, String address, List<Image> image, UserResponse author, CompanyInfo companyInfo) {
+    public ProductResponse(String id, String name, Category category, String description, Status status, Integer price, String electricityFee, Integer waterFee, String gasFee, String numberOfTenantsByRoomRate, String address, List<Image> image, UserResponse author, CompanyInfo companyInfo) {
         this.id = id;
         this.name = name;
-        this.type = type;
+        this.category = category;
         this.description = description;
         this.status = status;
         this.price = price;

@@ -13,6 +13,7 @@ import com.xinchao.security.AllRolePermission;
 import com.xinchao.services.ProductService;
 import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -79,7 +80,9 @@ public class ProductController {
     public ResponseEntity<?> updateProduct(
             @PathVariable String id,
             @RequestParam("product") String productJson,
-            @RequestParam("images") MultipartFile[] images) throws IOException {
+            @RequestParam("images") MultipartFile[] images,
+            @RequestParam("userId") String userId,
+            @RequestParam("companyInfoId") String companyInfoId) throws IOException {
 
 
 
@@ -88,7 +91,7 @@ public class ProductController {
         ProductRequest productRequest = objectMapper.readValue(productJson, ProductRequest.class);
 
         try {
-            ProductResponse updatedProduct = productService.updateProduct(id, productRequest, images);
+            ProductResponse updatedProduct = productService.updateProduct(id, productRequest, images , userId, companyInfoId);
             return ResponseEntity.ok(updatedProduct);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error updating product: " + e.getMessage());
@@ -133,6 +136,13 @@ public class ProductController {
         }
     }
 
+    @GetMapping(ProductApiEndpoints.GET_PRODUCTS_BY_PAGINATED)
+    public ResponseEntity<Page<ProductResponse>> getPaginatedProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<ProductResponse> paginatedProducts = productService.getPaginatedProducts(page, size);
+        return ResponseEntity.ok(paginatedProducts);
+    }
 
 
 

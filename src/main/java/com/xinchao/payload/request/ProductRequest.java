@@ -12,7 +12,7 @@ import lombok.Setter;
 @Data
 public class ProductRequest {
     private String name;
-    private Integer type;
+    private Integer category;
     private String description;
     private Integer price;
     private String electricityFee;

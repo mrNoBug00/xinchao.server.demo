@@ -12,6 +12,8 @@ public class ProductApiEndpoints {
     public static final String DELETE_PRODUCT = "/{id}";
     public static final String GET_PRODUCTS_BY_CATEGORY = "/category/{categoryName}";
     public static final String GET_PRODUCTS_BY_STATUS = "/status/{statusName}";
+    public static final String GET_PRODUCTS_BY_PAGINATED = "/paginated";
+
 
 }
 

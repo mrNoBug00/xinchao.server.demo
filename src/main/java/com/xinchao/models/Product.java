@@ -21,9 +21,10 @@ public class Product {
 
     private String name;
 
-    @OneToOne
-    @JoinColumn(name = "category_id")
-    private Category type;
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
     private Integer price;
     private String electricityFee;
@@ -35,7 +36,7 @@ public class Product {
     @Column(length = 1000)
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     @JsonManagedReference
     private List<Image> imageUrl;
@@ -49,7 +50,7 @@ public class Product {
 
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User author;
 

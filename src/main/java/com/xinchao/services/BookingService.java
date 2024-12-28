@@ -41,7 +41,7 @@ public class BookingService {
     }
 
     public BookingResponse createBooking(BookingRequest bookingRequest) {
-        Optional<User> userOptional = userRepository.findById(bookingRequest.getUserId());
+        //Optional<User> userOptional = userRepository.findById(bookingRequest.getUserId());
         Optional<Product> roomOptional = roomRepository.findById(bookingRequest.getRoomId());
         Optional<Status> optionalStatus = statusRepository.findByName(StatusEnum.PENDING);
 
@@ -51,12 +51,12 @@ public class BookingService {
 
 
 
-        if (userOptional.isPresent() && roomOptional.isPresent()) {
-            User user = userOptional.get();
+        if (roomOptional.isPresent() && roomOptional.isPresent()) {
+//            User user = roomOptional.get();
             Product room = roomOptional.get();
 
             Booking booking = new Booking();
-            booking.setUser(user);
+            //booking.setUser(user);
             booking.setRoom(room);
             booking.setBookerName(bookingRequest.getBookerName());
             booking.setBookerPhone(bookingRequest.getBookerPhone());
@@ -70,7 +70,7 @@ public class BookingService {
 
             return new BookingResponse(
                     savedBooking.getId(),
-                    savedBooking.getUser().getId(),
+//                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
                     savedBooking.getRoom().getAddress(),
@@ -105,7 +105,7 @@ public class BookingService {
 
             return new BookingResponse(
                     savedBooking.getId(),
-                    savedBooking.getUser().getId(),
+//                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
                     savedBooking.getRoom().getAddress(),
@@ -125,7 +125,7 @@ public class BookingService {
     }
 
     private BookingResponse mapToBookingResponse(Booking booking) {
-        UserResponse authorResponse = mapToUserResponse(booking.getUser());
+        //UserResponse authorResponse = mapToUserResponse(booking.getUser());
         UserResponse adminResponse = null;
         if (booking.getAdminId() != null) {
             adminResponse = mapToUserResponse(booking.getAdminId());
@@ -133,7 +133,7 @@ public class BookingService {
 
         return new BookingResponse(
                 booking.getId(),
-                booking.getUser().getId(),
+//                booking.getUser().getId(),
                 booking.getRoom().getId(),
                 booking.getRoom().getName(),
                 booking.getRoom().getAddress(),
@@ -182,7 +182,7 @@ public class BookingService {
 
             return new BookingResponse(
                     savedBooking.getId(),
-                    savedBooking.getUser().getId(),
+//                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
                     savedBooking.getRoom().getAddress(),
@@ -218,7 +218,7 @@ public class BookingService {
 
             return new BookingResponse(
                     savedBooking.getId(),
-                    savedBooking.getUser().getId(),
+//                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
                     savedBooking.getRoom().getAddress(),
