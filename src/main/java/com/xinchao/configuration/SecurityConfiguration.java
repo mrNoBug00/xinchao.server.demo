@@ -45,7 +45,9 @@ public class SecurityConfiguration {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
+
                 .requestMatchers(ApiEndpoints.PUBLIC_API_ENDPOINTS).permitAll() // Đảm bảo OPTIONS được cho phép
+
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()
@@ -91,7 +93,9 @@ public class SecurityConfiguration {
 //    CorsConfigurationSource corsConfigurationSource() {
 //        CorsConfiguration configuration = new CorsConfiguration();
 //
+
 //        configuration.setAllowedOrigins(List.of("https://www.thuenhadep.online"));
+
 //        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 //        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 //        configuration.setAllowCredentials(true); // Cho phép cookies và token
@@ -101,4 +105,5 @@ public class SecurityConfiguration {
 //
 //        return source;
 //    }
+
 }
