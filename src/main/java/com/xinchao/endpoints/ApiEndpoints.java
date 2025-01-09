@@ -34,6 +34,8 @@ public class ApiEndpoints {
     //booking api endpoint
     public static final String CREATE_BOOKING = BookingApiEndpoints.CREATE_BOOKING;
 
+    //depposit to hold
+    public static final String CREATE_DEPOSIT  = DepositToHoldEnpoints.BASE_URL_DEPOSIT_TO_HOLD + DepositToHoldEnpoints.CREATE_DEPOSIT;
 
     public static final String[] PUBLIC_API_ENDPOINTS = {
             LOGIN,
@@ -49,8 +51,12 @@ public class ApiEndpoints {
             GET_ALL_REGULATIONS,
             GET_ALL_COMPANY_INFO,
             GET_ALL_CATEGORY,
-            CREATE_BOOKING
+            CREATE_BOOKING,
+            CREATE_DEPOSIT
     };
 
 
 }
+
+
+

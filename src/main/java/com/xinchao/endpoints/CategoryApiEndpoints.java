@@ -7,4 +7,5 @@ public class CategoryApiEndpoints {
     public static final String ADD_CATEGORY = BASE_URL_CATEGORY;
     public static final String DELETE_CATEGORY = "/{id}";
     public static final String GET_CATEGORY_BY_ID = "/{id}";
+    public static final String UPDATE_CATEGORY = "/{id}/updateName";
 }

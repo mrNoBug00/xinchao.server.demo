@@ -51,7 +51,7 @@ public class BookingService {
 
 
 
-        if (roomOptional.isPresent() && roomOptional.isPresent()) {
+        if (roomOptional.isPresent()) {
 //            User user = roomOptional.get();
             Product room = roomOptional.get();
 
@@ -73,7 +73,8 @@ public class BookingService {
 //                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
-                    savedBooking.getRoom().getAddress(),
+                    savedBooking.getRoom().getCity(),
+                    savedBooking.getRoom().getArea(),
                     savedBooking.getBookerName(),
                     savedBooking.getBookerPhone(),
                     savedBooking.getBookingTime(),
@@ -108,7 +109,8 @@ public class BookingService {
 //                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
-                    savedBooking.getRoom().getAddress(),
+                    savedBooking.getRoom().getCity(),
+                    savedBooking.getRoom().getArea(),
                     savedBooking.getBookerName(),
                     savedBooking.getBookerPhone(),
                     savedBooking.getBookingTime(),
@@ -136,7 +138,8 @@ public class BookingService {
 //                booking.getUser().getId(),
                 booking.getRoom().getId(),
                 booking.getRoom().getName(),
-                booking.getRoom().getAddress(),
+                booking.getRoom().getCity(),
+                booking.getRoom().getArea(),
                 booking.getBookerName(),
                 booking.getBookerPhone(),
                 booking.getBookingTime(),
@@ -185,7 +188,8 @@ public class BookingService {
 //                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
-                    savedBooking.getRoom().getAddress(),
+                    savedBooking.getRoom().getCity(),
+                    savedBooking.getRoom().getArea(),
                     savedBooking.getBookerName(),
                     savedBooking.getBookerPhone(),
                     savedBooking.getBookingTime(),
@@ -221,7 +225,8 @@ public class BookingService {
 //                    savedBooking.getUser().getId(),
                     savedBooking.getRoom().getId(),
                     savedBooking.getRoom().getName(),
-                    savedBooking.getRoom().getAddress(),
+                    savedBooking.getRoom().getCity(),
+                    savedBooking.getRoom().getArea(),
                     savedBooking.getBookerName(),
                     savedBooking.getBookerPhone(),
                     savedBooking.getBookingTime(),

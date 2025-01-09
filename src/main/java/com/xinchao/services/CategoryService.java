@@ -27,6 +27,25 @@ public class CategoryService {
         }
     }
 
+    public Optional<Category> updateCategoryName(Integer id, String newName) {
+        // Kiểm tra xem Category có tồn tại hay không
+        Optional<Category> categoryOptional = categoryRepository.findById(id);
+        if (categoryOptional.isEmpty()) {
+            throw new IllegalArgumentException("Category not found with id: " + id);
+        }
+
+        // Kiểm tra xem tên mới đã tồn tại chưa
+        if (categoryRepository.existsByName(newName)) {
+            throw new IllegalArgumentException("Category name '" + newName + "' already exists");
+        }
+
+        // Nếu hợp lệ, tiến hành cập nhật
+        Category category = categoryOptional.get();
+        category.setName(newName); // Cập nhật tên
+        return Optional.of(categoryRepository.save(category)); // Lưu thay đổi
+    }
+
+
     public Optional<Category> getCategoryByName(Integer id) {
         return categoryRepository.findById(id);
     }

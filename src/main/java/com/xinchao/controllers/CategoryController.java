@@ -5,6 +5,7 @@ import com.xinchao.models.Category;
 import com.xinchao.security.AdminPermission;
 import com.xinchao.services.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +51,16 @@ public class CategoryController {
             return ResponseEntity.ok(category.get());
         } else {
             return ResponseEntity.status(404).body(null);
+        }
+    }
+
+    @PutMapping(CategoryApiEndpoints.UPDATE_CATEGORY)
+    public ResponseEntity<?> updateCategoryName(@PathVariable Integer id, @RequestParam String newName) {
+        Optional<Category> updatedCategory = categoryService.updateCategoryName(id, newName);
+        if (updatedCategory.isPresent()) {
+            return ResponseEntity.ok(updatedCategory.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
         }
     }
 }

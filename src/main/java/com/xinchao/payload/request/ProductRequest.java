@@ -19,7 +19,8 @@ public class ProductRequest {
     private Integer waterFee;
     private String gasFee;
     private String numberOfTenantsByRoomRate;
-    private String address;
+    private String city;
+    private String area;
     private Integer statusId;
 
 }

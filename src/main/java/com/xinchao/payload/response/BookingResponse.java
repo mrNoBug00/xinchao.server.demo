@@ -16,7 +16,8 @@ public class BookingResponse {
 //    private String userId;
     private String roomId;
     private String roomName;
-    private String roomAddress;
+    private String city;
+    private String area;
     private String bookerName;
     private String bookerPhone;
     private LocalDateTime bookingTime;
@@ -27,7 +28,7 @@ public class BookingResponse {
     private String refuseOrCancelMessage;
     private List<Image> contactQrCode;
 
-    public BookingResponse(String id, String roomId, String roomName, String roomAddress,
+    public BookingResponse(String id, String roomId, String roomName, String city, String area,
                            String bookerName, String bookerPhone, LocalDateTime bookingTime,
                            Status status, String confirmedBy, String refuseBy,
                            String cancelBy, String refuseOrCancelMessage, List<Image> contactQrCode) {
@@ -35,7 +36,8 @@ public class BookingResponse {
 //        this.userId = userId;
         this.roomId = roomId;
         this.roomName = roomName;
-        this.roomAddress = roomAddress;
+        this.city = city;
+        this.area = area;
         this.bookerName = bookerName;
         this.bookerPhone = bookerPhone;
         this.bookingTime = bookingTime;

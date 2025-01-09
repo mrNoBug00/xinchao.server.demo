@@ -17,12 +17,13 @@ public class ProductResponse {
     private Integer waterFee;
     private String gasFee;
     private String numberOfTenantsByRoomRate;
-    private String address;
+    private String city;
+    private String area;
     private List<Image> image;
     private UserResponse  author;
     private CompanyInfo companyInfo;
 
-    public ProductResponse(String id, String name, Category category, String description, Status status, Integer price, String electricityFee, Integer waterFee, String gasFee, String numberOfTenantsByRoomRate, String address, List<Image> image, UserResponse author, CompanyInfo companyInfo) {
+    public ProductResponse(String id, String name, Category category, String description, Status status, Integer price, String electricityFee, Integer waterFee, String gasFee, String numberOfTenantsByRoomRate, String city, String area, List<Image> image, UserResponse author, CompanyInfo companyInfo) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -33,7 +34,8 @@ public class ProductResponse {
         this.waterFee = waterFee;
         this.numberOfTenantsByRoomRate = numberOfTenantsByRoomRate;
         this.gasFee = gasFee;
-        this.address = address;
+        this.city = city;
+        this.area = area;
         this.image = image;
         this.author = author;
         this.companyInfo = companyInfo;

@@ -24,6 +24,10 @@ public class Image {
     private Product product;
 
 
+    @ManyToOne
+    @JoinColumn(name = "deposit_to_hold_id", nullable = true, foreignKey = @ForeignKey(name = "fk_deposit_to_hold_image"))
+    @JsonBackReference
+    private DepositToHold depositToHold;
 
 
 }

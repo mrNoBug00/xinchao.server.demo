@@ -8,6 +8,8 @@ import com.xinchao.payload.request.ProductRequest;
 import com.xinchao.payload.response.ProductResponse;
 import com.xinchao.payload.response.UserResponse;
 import com.xinchao.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -43,6 +45,8 @@ public class ProductService {
     private CompanyInfoRepository companyInfoRepository;
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private DepositToHoldRepository depositToHoldRepository;
 
     @Value("${product.upload.dir}")
     private String uploadDir;
@@ -50,6 +54,13 @@ public class ProductService {
 //    public List<Product> getAllProducts() {
 //        return productRepository.findAll();
 //    }
+
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    public ProductService(ProductRepository productRepository, ImageRepository imageRepository, DepositToHoldRepository depositToHoldRepository) {
+        this.productRepository = productRepository;
+        this.imageRepository = imageRepository;
+        this.depositToHoldRepository = depositToHoldRepository;
+    }
 
     public List<ProductResponse> getAllProducts() {
         return productRepository.findAll().stream()
@@ -81,7 +92,8 @@ public class ProductService {
         product.setWaterFee(productRequest.getWaterFee());
         product.setGasFee(productRequest.getGasFee());
         product.setNumberOfTenantsByRoomRate(productRequest.getNumberOfTenantsByRoomRate());
-        product.setAddress(productRequest.getAddress());
+        product.setCity(productRequest.getCity());
+        product.setArea(productRequest.getArea());
         product.setDescription(productRequest.getDescription());
         product.setStatus(optionalStatus.orElseThrow(() -> new RuntimeException("Status not found")));
 
@@ -124,7 +136,8 @@ public class ProductService {
                 product.getWaterFee(),
                 product.getGasFee(),
                 product.getNumberOfTenantsByRoomRate(),
-                product.getAddress(),
+                product.getCity(),
+                product.getArea(),
                 product.getImageUrl(),
                 authorResponse,
                 product.getCompanyInfo()
@@ -170,7 +183,8 @@ public class ProductService {
         product.setGasFee(productRequest.getGasFee());
         product.setNumberOfTenantsByRoomRate(productRequest.getNumberOfTenantsByRoomRate());
         product.setDescription(productRequest.getDescription());
-        product.setAddress(productRequest.getAddress());
+        product.setCity(productRequest.getCity());
+        product.setArea(productRequest.getArea());
         product.setStatus(optionalStatus.get());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
@@ -203,21 +217,36 @@ public class ProductService {
 
 
     @Transactional
-    public boolean deleteProduct(String id) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
+    public boolean deleteProduct(String productId) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+
         if (optionalProduct.isPresent()) {
             Product product = optionalProduct.get();
 
-            // Xóa các hình ảnh liên quan trước khi xóa sản phẩm
-            imageRepository.deleteByProductId(id);
+            // Lấy danh sách các DepositToHold liên quan đến sản phẩm
+            List<DepositToHold> depositToHolds = depositToHoldRepository.findByProductId(productId);
 
-            // Xóa sản phẩm
-            productRepository.deleteById(id);
+            // 1. Xóa tất cả các hình ảnh liên quan đến từng DepositToHold
+            depositToHolds.forEach(depositToHold -> {
+                imageRepository.deleteByDepositToHoldId(depositToHold.getId());
+            });
+
+            // 2. Xóa các bản ghi DepositToHold
+            depositToHoldRepository.deleteAll(depositToHolds);
+
+            // 3. Xóa sản phẩm
+            productRepository.deleteById(productId);
+
             return true;
         } else {
-            return false; // Product not found
+            return false; // Sản phẩm không tồn tại
         }
     }
+
+
+
+
+
 
 
 

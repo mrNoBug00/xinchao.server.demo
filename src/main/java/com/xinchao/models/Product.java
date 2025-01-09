@@ -32,7 +32,10 @@ public class Product {
     private String gasFee;
     private String numberOfTenantsByRoomRate;
 
-    private String address;
+    private String city;
+    private String area;
+
+
     @Column(length = 1000)
     private String description;
 
